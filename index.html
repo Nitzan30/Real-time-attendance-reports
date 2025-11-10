@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Real time attendance reports</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
@@ -117,132 +117,48 @@
         }
       }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <h1>Real time attendance reports</h1>
     <div id="regions-container"></div>
     <script>
       // Data extracted from your Excel file
       const siteData = [
-        {
-          region: "APAC",
-          country: "PHILIPPINES",
-          site: "Manila, Corporate Center",
-        },
+        { region: "APAC", country: "PHILIPPINES", site: "Manila, Corporate Center" },
         { region: "APAC", country: "PHILIPPINES", site: "Manila, EcoTower" },
-        {
-          region: "APAC",
-          country: "MALAYSIA",
-          site: "Kuala Lumpur, Centrepoint South",
-        },
+        { region: "APAC", country: "MALAYSIA", site: "Kuala Lumpur, Centrepoint South" },
         { region: "APAC", country: "INDONESIA", site: "Jakarta, Wisma GKBI" },
         { region: "APAC", country: "SINGAPORE", site: "Suntec Tower Two" },
-        {
-          region: "APAC",
-          country: "AUSTRALIA",
-          site: "Melbourne, 575 Bourke St",
-        },
-        {
-          region: "APAC",
-          country: "THAILAND",
-          site: "Bangkok, Fortune Towers",
-        },
+        { region: "APAC", country: "AUSTRALIA", site: "Melbourne, 575 Bourke St" },
+        { region: "APAC", country: "THAILAND", site: "Bangkok, Fortune Towers" },
         { region: "APAC", country: "INDONESIA", site: "Jakarta, Cyber 2" },
         { region: "APAC", country: "PHILIPPINES", site: "Manila, NEX Tower" },
         { region: "APAC", country: "TAIWAN", site: "Taipei, TPKA" },
-        {
-          region: "APAC",
-          country: "INDONESIA",
-          site: "Jakarta, Telkom Landmark",
-        },
-        {
-          region: "CALA",
-          country: "MEXICO",
-          site: "Guadalajara, Corporativo Galerias",
-        },
+        { region: "APAC", country: "INDONESIA", site: "Jakarta, Telkom Landmark" },
+        { region: "CALA", country: "MEXICO", site: "Guadalajara, Corporativo Galerias" },
         { region: "CALA", country: "BRAZIL", site: "Sao Carlos, ParqTec" },
-        {
-          region: "CALA",
-          country: "BRAZIL",
-          site: "Sao Paulo, Bandeira Paulista",
-        },
-        {
-          region: "CALA",
-          country: "MEXICO",
-          site: "Mexico City, Ejercito Nacional",
-        },
+        { region: "CALA", country: "BRAZIL", site: "Sao Paulo, Bandeira Paulista" },
+        { region: "CALA", country: "MEXICO", site: "Mexico City, Ejercito Nacional" },
         { region: "CALA", country: "CHILE", site: "Santiago, El Golf" },
         { region: "EMEA", country: "CYPRUS", site: "Limassol, D.Nicolaou" },
-        {
-          region: "EMEA",
-          country: "CZECH REPUBLIC",
-          site: "Prague, Profinit 8",
-        },
+        { region: "EMEA", country: "CZECH REPUBLIC", site: "Prague, Profinit 8" },
         { region: "EMEA", country: "BELGIUM", site: "Antwerpen, Veldkant" },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "TX, Plano, The Tennyson",
-        },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "GA, Alpharetta-RainWater",
-        },
-        {
-          region: "N. AMERICA",
-          country: "CANADA",
-          site: "Toronto, 111 Richmond St",
-        },
+        { region: "N. AMERICA", country: "USA", site: "TX, Plano, The Tennyson" },
+        { region: "N. AMERICA", country: "USA", site: "GA, Alpharetta-RainWater" },
+        { region: "N. AMERICA", country: "CANADA", site: "Toronto, 111 Richmond St" },
         { region: "N. AMERICA", country: "USA", site: "Champaign" },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "MO, St. Louis, Maryville Centre",
-        },
-        {
-          region: "N. AMERICA",
-          country: "CANADA",
-          site: "Mississauga, Milverton",
-        },
-        {
-          region: "N. AMERICA",
-          country: "CANADA",
-          site: "Montreal, 2351 Alfred Nobel",
-        },
+        { region: "N. AMERICA", country: "USA", site: "MO, St. Louis, Maryville Centre" },
+        { region: "N. AMERICA", country: "CANADA", site: "Mississauga, Milverton" },
+        { region: "N. AMERICA", country: "CANADA", site: "Montreal, 2351 Alfred Nobel" },
         { region: "N. AMERICA", country: "USA", site: "VA, Herndon" },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "NJ, Mt. Laurel, Briggs Rd.",
-        },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "PA, Philadelphia, Two Logan Square",
-        },
-        {
-          region: "N. AMERICA",
-          country: "CANADA",
-          site: "Ottawa, Bridgewater HQ",
-        },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "KS, Overland Park, Sprint Pkwy",
-        },
+        { region: "N. AMERICA", country: "USA", site: "NJ, Mt. Laurel, Briggs Rd." },
+        { region: "N. AMERICA", country: "USA", site: "PA, Philadelphia, Two Logan Square" },
+        { region: "N. AMERICA", country: "CANADA", site: "Ottawa, Bridgewater HQ" },
+        { region: "N. AMERICA", country: "USA", site: "KS, Overland Park, Sprint Pkwy" },
         { region: "N. AMERICA", country: "USA", site: "NJ, Jersey City" },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "IL, Chicago, 8420 W Bryn Mawr",
-        },
+        { region: "N. AMERICA", country: "USA", site: "IL, Chicago, 8420 W Bryn Mawr" },
         { region: "N. AMERICA", country: "USA", site: "Champaign" },
-        {
-          region: "N. AMERICA",
-          country: "USA",
-          site: "TX, Austin, 515 Congress Avenue",
-        },
+        { region: "N. AMERICA", country: "USA", site: "TX, Austin, 515 Congress Avenue" }
       ];
 
       // Report links mapping
@@ -264,18 +180,27 @@
         },
       ];
 
-      // Color palette for countries (extend as needed)
+      // Color palette from your image (primary, secondary, extended, complementary)
       const countryColors = [
-        "#ffe5e5",
-        "#e5f7ff",
-        "#e5ffe5",
-        "#fffbe5",
-        "#f3e5ff",
-        "#e5e9ff",
-        "#ffe5f7",
-        "#e5fff7",
-        "#fbe5ff",
-        "#e5fff3",
+        "#ffc72c", // Yellow
+        "#ef3340", // Coral
+        "#e4007f", // Magenta
+        "#ffb549", // Tulip Yellow
+        "#ffe596", // Creme
+        "#ffdca8", // Sweet Corn
+        "#f6a57f", // Apricot
+        "#f47d63", // Terra Pink
+        "#e9b7a9", // Dreamsicle
+        "#f48fb1", // Red Hot Pink 40%
+        "#e1b7c2", // Mauve
+        "#7c6eb0", // Ultra Violet
+        "#5b7f95", // Lavender Violet
+        "#00b2a9", // Teal
+        "#009ca6", // Aqua
+        "#00a9e0", // Blue
+        "#262626", // Black
+        "#8c8c8c", // Smokey
+        "#d9d9d6", // Ocean Spring
       ];
       const countryColorMap = {};
       let colorIdx = 0;
@@ -426,5 +351,5 @@
         });
       });
     </script>
-  </body>
+</body>
 </html>
