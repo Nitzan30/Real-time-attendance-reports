@@ -435,7 +435,6 @@
       // Global search with collapse + autocomplete
       const globalFilter = document.getElementById("globalFilter");
       const autocompleteBox = document.getElementById("autocomplete");
-      const allRows = document.querySelectorAll("tbody tr");
 
       globalFilter.addEventListener("input", () => {
         const val = globalFilter.value.toLowerCase();
@@ -472,12 +471,23 @@
         }
       });
 
+      // Hide dropdown after selection
       autocompleteBox.addEventListener("click", (e) => {
         if (e.target.classList.contains("autocomplete-item")) {
           globalFilter.value = e.target.textContent;
           autocompleteBox.style.display = "none";
+          autocompleteBox.innerHTML = "";
           globalFilter.dispatchEvent(new Event("input"));
+          globalFilter.blur(); // rolls up
         }
+      });
+
+      // Hide dropdown when input loses focus
+      globalFilter.addEventListener("blur", () => {
+        setTimeout(() => {
+          autocompleteBox.style.display = "none";
+          autocompleteBox.innerHTML = "";
+        }, 150);
       });
     </script>
   </body>
