@@ -12,25 +12,12 @@
       }
       h1 {
         text-align: center;
-        margin-top: 24px;
+        margin-top: 32px;
         color: #333;
-      }
-      .global-search {
-        display: flex;
-        justify-content: center;
-        margin: 16px auto 24px auto;
-        max-width: 500px;
-      }
-      .global-search input {
-        width: 100%;
-        padding: 10px 14px;
-        font-size: 1em;
-        border: 1px solid #ccc;
-        border-radius: 6px;
       }
       .region-section {
         background: #ffffff;
-        margin: 24px auto 32px auto;
+        margin: 32px auto 40px auto;
         padding: 0 32px;
         border-radius: 12px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
@@ -41,11 +28,11 @@
         align-items: center;
         justify-content: space-between;
         cursor: pointer;
-        padding: 18px 0;
+        padding: 20px 0;
       }
       .region-title {
         color: #4a4a4a;
-        font-size: 1.4em;
+        font-size: 1.5em;
         margin: 0;
       }
       .toggle-btn {
@@ -103,14 +90,8 @@
       th.sort-desc::after {
         content: " ▼";
       }
-      tr:nth-child(even) {
-        background: #f8f9fa; /* Light gray for alternating rows */
-      }
-      tr:nth-child(odd) {
-        background: #fff;
-      }
       tr:hover td {
-        background: #eef2f7; /* Slight hover highlight */
+        background: #f8f9fa;
       }
       .report-link {
         color: #0077cc;
@@ -137,13 +118,6 @@
   </head>
   <body>
     <h1>Real time attendance reports</h1>
-    <div class="global-search">
-      <input
-        type="text"
-        id="globalFilter"
-        placeholder="Search site or country across all regions..."
-      />
-    </div>
     <div id="regions-container"></div>
     <script>
       const siteData = [
@@ -285,6 +259,30 @@
         },
       ];
 
+      // Light pastel colors for countries
+      const countryColors = [
+        "#fdf6e3",
+        "#fef9e7",
+        "#f9f9f9",
+        "#f3f4f6",
+        "#e8f4f8",
+        "#f8f1f4",
+        "#f4f8e8",
+        "#f0f7fa",
+        "#faf3f0",
+        "#f6f6f6",
+      ];
+      const countryColorMap = {};
+      let colorIdx = 0;
+
+      siteData.forEach((item) => {
+        if (!countryColorMap[item.country]) {
+          countryColorMap[item.country] =
+            countryColors[colorIdx % countryColors.length];
+          colorIdx++;
+        }
+      });
+
       const regions = {};
       siteData.forEach((item) => {
         if (!regions[item.region]) regions[item.region] = [];
@@ -337,14 +335,16 @@
                         const link = reportLinks.find((link) =>
                           link.match(item)
                         );
+                        const countryColor =
+                          countryColorMap[item.country] || "#fff";
                         return `
-                        <tr>
+                        <tr style="background:${countryColor}">
                             <td>${item.country}</td>
                             <td>${item.site}</td>
                             <td>
                                 ${
                                   link
-                                    ? `<a href="${link.url}" class="report-link" target="_blank">${link.label}</a>`
+                                    ? `<a href="${link.url}" class="report-link" target="_blank" rel="noopener noreferrer">${link.label}</a>`
                                     : ""
                                 }
                             </td>
@@ -404,18 +404,6 @@
               table.querySelector("tbody").appendChild(row)
             );
           });
-        });
-      });
-
-      // Global search across all regions
-      const globalFilter = document.getElementById("globalFilter");
-      globalFilter.addEventListener("input", () => {
-        const val = globalFilter.value.toLowerCase();
-        document.querySelectorAll("tbody tr").forEach((row) => {
-          const country = row.cells[0].textContent.toLowerCase();
-          const site = row.cells[1].textContent.toLowerCase();
-          row.style.display =
-            country.includes(val) || site.includes(val) || !val ? "" : "none";
         });
       });
     </script>
