@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Real time attendance reports</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body {
         font-family: "Segoe UI", Arial, sans-serif;
-        background: #f6f8fa;
+        background: #f9fafb;
         margin: 0;
         padding: 0;
       }
       h1 {
         text-align: center;
         margin-top: 32px;
-        color: #22223b;
+        color: #333;
       }
       .region-section {
-        background: #fff;
+        background: #ffffff;
         margin: 32px auto 40px auto;
-        padding: 0 32px 0 32px;
-        border-radius: 16px;
-        box-shadow: 0 4px 24px rgba(34, 34, 59, 0.08);
+        padding: 0 32px;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
         max-width: 900px;
       }
       .region-header {
@@ -28,44 +28,43 @@
         align-items: center;
         justify-content: space-between;
         cursor: pointer;
-        padding: 24px 0 24px 0;
+        padding: 20px 0;
       }
       .region-title {
-        color: #3a5a40;
-        font-size: 1.6em;
-        letter-spacing: 1px;
+        color: #4a4a4a;
+        font-size: 1.5em;
         margin: 0;
       }
       .toggle-btn {
-        font-size: 1.5em;
+        font-size: 1.4em;
         background: none;
         border: none;
-        color: #3a5a40;
+        color: #4a4a4a;
         cursor: pointer;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         transition: background 0.2s;
       }
       .toggle-btn:hover {
-        background: #e9ecef;
+        background: #f0f0f0;
       }
       .region-content {
         display: none;
-        padding-bottom: 32px;
+        padding-bottom: 24px;
       }
       .filters {
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         display: flex;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
       }
       .filters input {
         padding: 8px 12px;
-        border: 1px solid #b7b7b7;
+        border: 1px solid #ccc;
         border-radius: 6px;
         font-size: 1em;
-        background: #f6f8fa;
+        background: #f9fafb;
       }
       table {
         width: 100%;
@@ -75,16 +74,15 @@
       }
       th,
       td {
-        padding: 12px 10px;
-        border-bottom: 1px solid #e0e0e0;
+        padding: 10px;
+        border-bottom: 1px solid #eaeaea;
         text-align: left;
       }
       th {
-        background: #e9ecef;
-        color: #22223b;
+        background: #f3f4f6;
+        color: #333;
         cursor: pointer;
         user-select: none;
-        position: relative;
       }
       th.sort-asc::after {
         content: " ▲";
@@ -92,11 +90,14 @@
       th.sort-desc::after {
         content: " ▼";
       }
+      tr {
+        background: #fff; /* White rows */
+      }
       tr:hover td {
-        background: #f1faee;
+        background: #f8f9fa; /* Light hover */
       }
       .report-link {
-        color: #1976d2;
+        color: #0077cc;
         text-decoration: none;
         font-weight: 500;
       }
@@ -117,51 +118,132 @@
         }
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Real time attendance reports</h1>
     <div id="regions-container"></div>
     <script>
-      // Data extracted from your Excel file
       const siteData = [
-        { region: "APAC", country: "PHILIPPINES", site: "Manila, Corporate Center" },
+        {
+          region: "APAC",
+          country: "PHILIPPINES",
+          site: "Manila, Corporate Center",
+        },
         { region: "APAC", country: "PHILIPPINES", site: "Manila, EcoTower" },
-        { region: "APAC", country: "MALAYSIA", site: "Kuala Lumpur, Centrepoint South" },
+        {
+          region: "APAC",
+          country: "MALAYSIA",
+          site: "Kuala Lumpur, Centrepoint South",
+        },
         { region: "APAC", country: "INDONESIA", site: "Jakarta, Wisma GKBI" },
         { region: "APAC", country: "SINGAPORE", site: "Suntec Tower Two" },
-        { region: "APAC", country: "AUSTRALIA", site: "Melbourne, 575 Bourke St" },
-        { region: "APAC", country: "THAILAND", site: "Bangkok, Fortune Towers" },
+        {
+          region: "APAC",
+          country: "AUSTRALIA",
+          site: "Melbourne, 575 Bourke St",
+        },
+        {
+          region: "APAC",
+          country: "THAILAND",
+          site: "Bangkok, Fortune Towers",
+        },
         { region: "APAC", country: "INDONESIA", site: "Jakarta, Cyber 2" },
         { region: "APAC", country: "PHILIPPINES", site: "Manila, NEX Tower" },
         { region: "APAC", country: "TAIWAN", site: "Taipei, TPKA" },
-        { region: "APAC", country: "INDONESIA", site: "Jakarta, Telkom Landmark" },
-        { region: "CALA", country: "MEXICO", site: "Guadalajara, Corporativo Galerias" },
+        {
+          region: "APAC",
+          country: "INDONESIA",
+          site: "Jakarta, Telkom Landmark",
+        },
+        {
+          region: "CALA",
+          country: "MEXICO",
+          site: "Guadalajara, Corporativo Galerias",
+        },
         { region: "CALA", country: "BRAZIL", site: "Sao Carlos, ParqTec" },
-        { region: "CALA", country: "BRAZIL", site: "Sao Paulo, Bandeira Paulista" },
-        { region: "CALA", country: "MEXICO", site: "Mexico City, Ejercito Nacional" },
+        {
+          region: "CALA",
+          country: "BRAZIL",
+          site: "Sao Paulo, Bandeira Paulista",
+        },
+        {
+          region: "CALA",
+          country: "MEXICO",
+          site: "Mexico City, Ejercito Nacional",
+        },
         { region: "CALA", country: "CHILE", site: "Santiago, El Golf" },
         { region: "EMEA", country: "CYPRUS", site: "Limassol, D.Nicolaou" },
-        { region: "EMEA", country: "CZECH REPUBLIC", site: "Prague, Profinit 8" },
+        {
+          region: "EMEA",
+          country: "CZECH REPUBLIC",
+          site: "Prague, Profinit 8",
+        },
         { region: "EMEA", country: "BELGIUM", site: "Antwerpen, Veldkant" },
-        { region: "N. AMERICA", country: "USA", site: "TX, Plano, The Tennyson" },
-        { region: "N. AMERICA", country: "USA", site: "GA, Alpharetta-RainWater" },
-        { region: "N. AMERICA", country: "CANADA", site: "Toronto, 111 Richmond St" },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "TX, Plano, The Tennyson",
+        },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "GA, Alpharetta-RainWater",
+        },
+        {
+          region: "N. AMERICA",
+          country: "CANADA",
+          site: "Toronto, 111 Richmond St",
+        },
         { region: "N. AMERICA", country: "USA", site: "Champaign" },
-        { region: "N. AMERICA", country: "USA", site: "MO, St. Louis, Maryville Centre" },
-        { region: "N. AMERICA", country: "CANADA", site: "Mississauga, Milverton" },
-        { region: "N. AMERICA", country: "CANADA", site: "Montreal, 2351 Alfred Nobel" },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "MO, St. Louis, Maryville Centre",
+        },
+        {
+          region: "N. AMERICA",
+          country: "CANADA",
+          site: "Mississauga, Milverton",
+        },
+        {
+          region: "N. AMERICA",
+          country: "CANADA",
+          site: "Montreal, 2351 Alfred Nobel",
+        },
         { region: "N. AMERICA", country: "USA", site: "VA, Herndon" },
-        { region: "N. AMERICA", country: "USA", site: "NJ, Mt. Laurel, Briggs Rd." },
-        { region: "N. AMERICA", country: "USA", site: "PA, Philadelphia, Two Logan Square" },
-        { region: "N. AMERICA", country: "CANADA", site: "Ottawa, Bridgewater HQ" },
-        { region: "N. AMERICA", country: "USA", site: "KS, Overland Park, Sprint Pkwy" },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "NJ, Mt. Laurel, Briggs Rd.",
+        },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "PA, Philadelphia, Two Logan Square",
+        },
+        {
+          region: "N. AMERICA",
+          country: "CANADA",
+          site: "Ottawa, Bridgewater HQ",
+        },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "KS, Overland Park, Sprint Pkwy",
+        },
         { region: "N. AMERICA", country: "USA", site: "NJ, Jersey City" },
-        { region: "N. AMERICA", country: "USA", site: "IL, Chicago, 8420 W Bryn Mawr" },
-        { region: "N. AMERICA", country: "USA", site: "Champaign" },
-        { region: "N. AMERICA", country: "USA", site: "TX, Austin, 515 Congress Avenue" }
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "IL, Chicago, 8420 W Bryn Mawr",
+        },
+        {
+          region: "N. AMERICA",
+          country: "USA",
+          site: "TX, Austin, 515 Congress Avenue",
+        },
       ];
 
-      // Report links mapping
       const reportLinks = [
         {
           match: (item) => item.country === "PHILIPPINES",
@@ -180,54 +262,17 @@
         },
       ];
 
-      // Color palette from your image (primary, secondary, extended, complementary)
-      const countryColors = [
-        "#ffc72c", // Yellow
-        "#ef3340", // Coral
-        "#e4007f", // Magenta
-        "#ffb549", // Tulip Yellow
-        "#ffe596", // Creme
-        "#ffdca8", // Sweet Corn
-        "#f6a57f", // Apricot
-        "#f47d63", // Terra Pink
-        "#e9b7a9", // Dreamsicle
-        "#f48fb1", // Red Hot Pink 40%
-        "#e1b7c2", // Mauve
-        "#7c6eb0", // Ultra Violet
-        "#5b7f95", // Lavender Violet
-        "#00b2a9", // Teal
-        "#009ca6", // Aqua
-        "#00a9e0", // Blue
-        "#262626", // Black
-        "#8c8c8c", // Smokey
-        "#d9d9d6", // Ocean Spring
-      ];
-      const countryColorMap = {};
-      let colorIdx = 0;
-
-      // Assign a color to each country
-      siteData.forEach((item) => {
-        if (!countryColorMap[item.country]) {
-          countryColorMap[item.country] =
-            countryColors[colorIdx % countryColors.length];
-          colorIdx++;
-        }
-      });
-
-      // Group data by region
       const regions = {};
       siteData.forEach((item) => {
         if (!regions[item.region]) regions[item.region] = [];
         regions[item.region].push(item);
       });
 
-      // Render tables per region
       const container = document.getElementById("regions-container");
       Object.keys(regions).forEach((region) => {
         const section = document.createElement("div");
         section.className = "region-section";
 
-        // Region header with toggle button
         const headerDiv = document.createElement("div");
         headerDiv.className = "region-header";
 
@@ -243,11 +288,9 @@
         headerDiv.appendChild(toggleBtn);
         section.appendChild(headerDiv);
 
-        // Region content (hidden by default)
         const contentDiv = document.createElement("div");
         contentDiv.className = "region-content";
 
-        // Filters
         const filtersDiv = document.createElement("div");
         filtersDiv.className = "filters";
         filtersDiv.innerHTML = `
@@ -256,7 +299,6 @@
             `;
         contentDiv.appendChild(filtersDiv);
 
-        // Table
         const table = document.createElement("table");
         table.innerHTML = `
                 <thead>
@@ -269,14 +311,11 @@
                 <tbody>
                     ${regions[region]
                       .map((item) => {
-                        // Find matching report link
                         const link = reportLinks.find((link) =>
                           link.match(item)
                         );
-                        const countryColor =
-                          countryColorMap[item.country] || "#fff";
                         return `
-                        <tr style="background:${countryColor}">
+                        <tr>
                             <td>${item.country}</td>
                             <td>${item.site}</td>
                             <td>
@@ -296,14 +335,12 @@
         section.appendChild(contentDiv);
         container.appendChild(section);
 
-        // Toggle logic
         toggleBtn.addEventListener("click", () => {
           const isOpen = contentDiv.style.display === "block";
           contentDiv.style.display = isOpen ? "none" : "block";
           toggleBtn.innerHTML = isOpen ? "+" : "–";
         });
 
-        // Filtering logic
         const countryInput = filtersDiv.querySelector(".country-filter");
         const siteInput = filtersDiv.querySelector(".site-filter");
         const rows = table.querySelectorAll("tbody tr");
@@ -314,20 +351,16 @@
           rows.forEach((row) => {
             const country = row.cells[0].textContent.toLowerCase();
             const site = row.cells[1].textContent.toLowerCase();
-            if (
+            row.style.display =
               (country.includes(countryVal) || !countryVal) &&
               (site.includes(siteVal) || !siteVal)
-            ) {
-              row.style.display = "";
-            } else {
-              row.style.display = "none";
-            }
+                ? ""
+                : "none";
           });
         }
         countryInput.addEventListener("input", filterRows);
         siteInput.addEventListener("input", filterRows);
 
-        // Sorting logic
         const headers = table.querySelectorAll("th");
         headers.forEach((header, idx) => {
           header.addEventListener("click", () => {
@@ -351,5 +384,5 @@
         });
       });
     </script>
-</body>
+  </body>
 </html>
