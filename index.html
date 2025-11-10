@@ -12,12 +12,45 @@
       }
       h1 {
         text-align: center;
-        margin-top: 32px;
+        margin-top: 24px;
         color: #333;
+      }
+      .global-search {
+        display: flex;
+        justify-content: center;
+        margin: 16px auto 24px auto;
+        max-width: 500px;
+        position: relative;
+      }
+      .global-search input {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+      .autocomplete-list {
+        position: absolute;
+        top: 42px;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        max-height: 180px;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .autocomplete-item:hover {
+        background: #f0f0f0;
       }
       .region-section {
         background: #ffffff;
-        margin: 32px auto 40px auto;
+        margin: 24px auto 32px auto;
         padding: 0 32px;
         border-radius: 12px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
@@ -28,11 +61,11 @@
         align-items: center;
         justify-content: space-between;
         cursor: pointer;
-        padding: 20px 0;
+        padding: 18px 0;
       }
       .region-title {
         color: #4a4a4a;
-        font-size: 1.5em;
+        font-size: 1.4em;
         margin: 0;
       }
       .toggle-btn {
@@ -90,8 +123,14 @@
       th.sort-desc::after {
         content: " ▼";
       }
-      tr:hover td {
+      tr:nth-child(even) {
         background: #f8f9fa;
+      }
+      tr:nth-child(odd) {
+        background: #fff;
+      }
+      tr:hover td {
+        background: #eef2f7;
       }
       .report-link {
         color: #0077cc;
@@ -118,6 +157,18 @@
   </head>
   <body>
     <h1>Real time attendance reports</h1>
+    <div class="global-search">
+      <input
+        type="text"
+        id="globalFilter"
+        placeholder="Search site or country across all regions..."
+      />
+      <div
+        id="autocomplete"
+        class="autocomplete-list"
+        style="display: none"
+      ></div>
+    </div>
     <div id="regions-container"></div>
     <script>
       const siteData = [
@@ -259,30 +310,6 @@
         },
       ];
 
-      // Light pastel colors for countries
-      const countryColors = [
-        "#fdf6e3",
-        "#fef9e7",
-        "#f9f9f9",
-        "#f3f4f6",
-        "#e8f4f8",
-        "#f8f1f4",
-        "#f4f8e8",
-        "#f0f7fa",
-        "#faf3f0",
-        "#f6f6f6",
-      ];
-      const countryColorMap = {};
-      let colorIdx = 0;
-
-      siteData.forEach((item) => {
-        if (!countryColorMap[item.country]) {
-          countryColorMap[item.country] =
-            countryColors[colorIdx % countryColors.length];
-          colorIdx++;
-        }
-      });
-
       const regions = {};
       siteData.forEach((item) => {
         if (!regions[item.region]) regions[item.region] = [];
@@ -335,16 +362,14 @@
                         const link = reportLinks.find((link) =>
                           link.match(item)
                         );
-                        const countryColor =
-                          countryColorMap[item.country] || "#fff";
                         return `
-                        <tr style="background:${countryColor}">
+                        <tr>
                             <td>${item.country}</td>
                             <td>${item.site}</td>
                             <td>
                                 ${
                                   link
-                                    ? `<a href="${link.url}" class="report-link" target="_blank" rel="noopener noreferrer">${link.label}</a>`
+                                    ? `<a href="${link.url}" class="report-link" target="_blank">${link.label}</a>`
                                     : ""
                                 }
                             </td>
@@ -405,6 +430,54 @@
             );
           });
         });
+      });
+
+      // Global search with collapse + autocomplete
+      const globalFilter = document.getElementById("globalFilter");
+      const autocompleteBox = document.getElementById("autocomplete");
+      const allRows = document.querySelectorAll("tbody tr");
+
+      globalFilter.addEventListener("input", () => {
+        const val = globalFilter.value.toLowerCase();
+        const suggestions = [];
+
+        document.querySelectorAll(".region-section").forEach((section) => {
+          const rows = section.querySelectorAll("tbody tr");
+          let regionHasMatch = false;
+          rows.forEach((row) => {
+            const country = row.cells[0].textContent.toLowerCase();
+            const site = row.cells[1].textContent.toLowerCase();
+            const match = country.includes(val) || site.includes(val);
+            row.style.display = match || !val ? "" : "none";
+            if (match) {
+              regionHasMatch = true;
+              suggestions.push(
+                row.cells[0].textContent,
+                row.cells[1].textContent
+              );
+            }
+          });
+          section.style.display = regionHasMatch || !val ? "" : "none";
+        });
+
+        // Autocomplete suggestions
+        if (val && suggestions.length > 0) {
+          autocompleteBox.innerHTML = [...new Set(suggestions)]
+            .slice(0, 10)
+            .map((s) => `<div class="autocomplete-item">${s}</div>`)
+            .join("");
+          autocompleteBox.style.display = "block";
+        } else {
+          autocompleteBox.style.display = "none";
+        }
+      });
+
+      autocompleteBox.addEventListener("click", (e) => {
+        if (e.target.classList.contains("autocomplete-item")) {
+          globalFilter.value = e.target.textContent;
+          autocompleteBox.style.display = "none";
+          globalFilter.dispatchEvent(new Event("input"));
+        }
       });
     </script>
   </body>
